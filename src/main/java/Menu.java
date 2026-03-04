@@ -17,7 +17,7 @@ public class Menu {
             String answer = scanner.nextLine();
             switch (answer) {
                 case "1" -> Encrypted.encrypted();
-                case "2" -> System.out.println("2");
+                case "2" -> Decrypted.decrypted();
                 case "3" -> System.out.println("3");
                 case "4" -> System.out.println("4");
                 case "5" -> {
