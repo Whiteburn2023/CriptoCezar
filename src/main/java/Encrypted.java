@@ -1,27 +1,28 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 public class Encrypted {
 
     public static void encrypted(boolean flag) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println( flag ?
-                "Введите путь к файлу для его зашифровки" :
-                "Введите путь к файлу для его расшифровки");
+        System.out.println("Введите путь к файлу для его " + (flag ? "зашифровки" : "расшифровки"));
         String src = scanner.nextLine();
         System.out.println("введите ключ шифрования");
         int key = Integer.parseInt(scanner.nextLine());
         System.out.println("Введите путь к файлу куда записать результат");
         String dst = scanner.nextLine();
         CaesarCipher caesarCipher = new CaesarCipher();
-        try (FileReader fileReader = new FileReader(src);
-             BufferedReader bufferedReader = new BufferedReader(fileReader);
-             FileWriter fileWriter = new FileWriter(dst);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
+             BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(dst))) {
             while (bufferedReader.ready()) {
+                String string = bufferedReader.readLine();
                 bufferedWriter.write(flag ?
-                        caesarCipher.encrypt(bufferedReader.readLine(), key) :
-                        caesarCipher.decrypt(bufferedReader.readLine(), key));
+                        caesarCipher.encrypt(string, key) :
+                        caesarCipher.decrypt(string, key));
                 bufferedWriter.newLine();
             }
         }
