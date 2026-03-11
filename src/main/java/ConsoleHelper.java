@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @UtilityClass
 public class ConsoleHelper {
@@ -34,4 +35,22 @@ public class ConsoleHelper {
         return null;
     }
 
+    public Path dstFilename(String path, boolean flag){
+        String extFile = flag ? "_e" : "_d";
+
+        int lastDot = path.lastIndexOf(".");
+        String dotExt = "";
+        if (lastDot != -1){
+            dotExt = path.substring(lastDot);
+            path = path.substring(0, lastDot);
+        }
+
+        Path scrPath = Paths.get(path);
+        Path scrNameFile = scrPath.getFileName();
+        Path scrParentDirectory = scrPath.getParent();
+        Path dst = scrParentDirectory.resolve(scrNameFile + extFile + dotExt );
+        System.out.println("Файл сохранен " + dst);
+
+        return dst;
+    }
 }
