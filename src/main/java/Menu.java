@@ -18,7 +18,7 @@ public class Menu {
             switch (answer) {
                 case "1" -> Encrypted.encrypted(true);
                 case "2" -> Encrypted.encrypted(false);
-                case "3" -> System.out.println("3");
+                case "3" -> Bruteforce.bruteforce();
                 case "4" -> System.out.println("4");
                 case "5" -> {
                     return;

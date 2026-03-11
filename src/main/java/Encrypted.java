@@ -8,11 +8,12 @@ public class Encrypted {
 
     public static void encrypted(boolean flag) throws IOException {
 
-        System.out.println("Введите путь к файлу для его " + (flag ? "зашифровки" : "расшифровки"));
+        ConsoleHelper.writeMessage("Введите путь к файлу для его " + (flag ? "зашифровки" : "расшифровки"));
         String src = ConsoleHelper.readString();
-        Path dst = ConsoleHelper.dstFilename(src, flag);
-        System.out.println("введите ключ шифрования");
+        Path dst = ConsoleHelper.dstFilename(src, flag, "");
+        ConsoleHelper.writeMessage("введите ключ шифрования");
         int key = ConsoleHelper.readInt();
+        ConsoleHelper.writeMessage("Файл сохранен в папку \n" + dst);
 
         CaesarCipher caesarCipher = new CaesarCipher();
         try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
