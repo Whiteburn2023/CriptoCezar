@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
 
 public class Bruteforce {
     @SneakyThrows
@@ -37,14 +35,11 @@ public class Bruteforce {
     private static boolean isValidateText(String text) {
         String[] array = text.split(" ");
         while (true) {
-
-            for (int i = 0; i < array.length; i++) {
-                if (array[i].length() > 28) {
+            for (String i : array){
+                if (i.length() > 28){
                     return false;
                 }
             }
-
-
             ConsoleHelper.writeMessage(text.substring(0, 1000));
             ConsoleHelper.writeMessage("текст можно прочесть? введите да/нет");
             String answer = ConsoleHelper.readString();
