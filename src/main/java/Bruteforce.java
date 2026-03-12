@@ -35,23 +35,23 @@ public class Bruteforce {
     }
 
     private static boolean isValidateText(String text) {
-        Scanner scanner = new Scanner(text);
-        if (!text.contains(". ") || !text.contains(", ") || !text.contains("? ") || !text.contains("! ")){
-            return false;
-        }
-        while (scanner.hasNext()){
-            String string = scanner.next();
-            if (string.length() > 28){
-                return false;
+        String[] array = text.split(" ");
+        while (true) {
+
+            for (int i = 0; i < array.length; i++) {
+                if (array[i].length() > 28) {
+                    return false;
+                }
+            }
+
+
+            ConsoleHelper.writeMessage(text.substring(0, 1000));
+            ConsoleHelper.writeMessage("текст можно прочесть? введите да/нет");
+            String answer = ConsoleHelper.readString();
+            if (answer.equalsIgnoreCase("да")) {
+                ConsoleHelper.writeMessage("отлично, файл сохранен");
+                return true;
             }
         }
-        ConsoleHelper.writeMessage(text.substring(0,1000));
-        ConsoleHelper.writeMessage("текст можно прочесть? введите да/нет");
-        String answer = ConsoleHelper.readString();
-        if (answer.equalsIgnoreCase("да")){
-            ConsoleHelper.writeMessage("отлично, файл сохранен");
-        }
-
-        return true;
     }
 }
