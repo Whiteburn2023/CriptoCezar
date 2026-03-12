@@ -10,7 +10,7 @@ public class Encrypted {
 
         ConsoleHelper.writeMessage("Введите путь к файлу для его " + (flag ? "зашифровки" : "расшифровки"));
         String src = ConsoleHelper.readString();
-        Path dst = ConsoleHelper.dstFilename(src, flag, "");
+        Path dst = ConsoleHelper.buildFileName(src, (flag ? "_e" : "_d"));
         ConsoleHelper.writeMessage("введите ключ шифрования");
         int key = ConsoleHelper.readInt();
         ConsoleHelper.writeMessage("Файл сохранен в папку \n" + dst);
@@ -26,6 +26,6 @@ public class Encrypted {
                 bufferedWriter.newLine();
             }
         }
-        System.out.println(flag ? "файл зашифрован" : "файл расшифрован");
+        ConsoleHelper.writeMessage(flag ? "файл зашифрован" : "файл расшифрован");
     }
 }

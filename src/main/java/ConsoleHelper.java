@@ -32,21 +32,16 @@ public class ConsoleHelper {
     }
 
     public Path buildFileName(String path, String suffix) {
-        int lastDot = path.lastIndexOf(".");
-        String dotExt = "";
-        if (lastDot != -1) {
-            dotExt = path.substring(lastDot);
-            path = path.substring(0, lastDot);
-        }
         Path scrPath = Paths.get(path);
-        Path scrNameFile = scrPath.getFileName();
-        Path scrParentDirectory = scrPath.getParent();
-        Path dst = scrParentDirectory.resolve(scrNameFile + suffix + dotExt);
-        return dst;
-    }
-
-    public Path dstFilename(String path, boolean flag, String suffix) {
-        String extFile = flag ? "_e" : "_d";
-        return buildFileName(path, extFile);
+        String scrNameFile = scrPath.getFileName().toString();
+        Path parentDirectory = scrPath.getParent();
+        String newFileName;
+        if (scrNameFile.contains(".")) {
+            int index = scrNameFile.indexOf(".");
+            newFileName = scrNameFile.substring(0, index) + suffix + scrNameFile.substring(index);
+        } else {
+            newFileName = scrNameFile + suffix;
+        }
+        return parentDirectory.resolve(newFileName);
     }
 }

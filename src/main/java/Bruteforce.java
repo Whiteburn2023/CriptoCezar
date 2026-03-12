@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Bruteforce {
     @SneakyThrows
@@ -15,8 +17,10 @@ public class Bruteforce {
         try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
              BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
             StringBuilder stringBuilder = new StringBuilder();
+            List<String> list = new ArrayList<>();
             while (bufferedReader.ready()) {
                 String string = bufferedReader.readLine();
+                list.add(string);
                 stringBuilder.append(string);
             }
 
@@ -24,7 +28,11 @@ public class Bruteforce {
             for (int i = 0; i < caesarCipher.alphabetLength(); i++) {
                 String decrypt = caesarCipher.decrypt(stringBuilder.toString(), i);
                 if (isValidateText(decrypt)) {
-                    bufferedWriter.write(decrypt);
+                    for (String string : list) {
+                        String str = caesarCipher.decrypt(string, i);
+                        bufferedWriter.write(str);
+                        bufferedWriter.newLine();
+                    }
                     ConsoleHelper.writeMessage("Текст расшифрован, ключ шифрования равен: " + i);
                     break;
                 }
@@ -33,20 +41,29 @@ public class Bruteforce {
     }
 
     private static boolean isValidateText(String text) {
-        String[] array = text.split(" ");
-        while (true) {
-            for (String i : array){
-                if (i.length() > 28){
-                    return false;
-                }
-            }
-            ConsoleHelper.writeMessage(text.substring(0, 1000));
-            ConsoleHelper.writeMessage("текст можно прочесть? введите да/нет");
-            String answer = ConsoleHelper.readString();
-            if (answer.equalsIgnoreCase("да")) {
-                ConsoleHelper.writeMessage("отлично, файл сохранен");
-                return true;
+        int maxLengthWord = 28;
+        for (String word : text.split(" ")) {
+            if (word.length() > maxLengthWord) {
+                return false;
             }
         }
+        boolean isValidate = false;
+        if (text.contains(". ")) {
+            isValidate = true;
+        }
+        int maxVisibleLength = 1000;
+        while (isValidate) {
+            ConsoleHelper.writeMessage(text.length() > maxVisibleLength ? text.substring(0, maxVisibleLength) : text);
+            ConsoleHelper.writeMessage("текст можно прочесть? введите Y/N");
+            String answer = ConsoleHelper.readString();
+            if (answer.equalsIgnoreCase("Y")) {
+                return true;
+            } else if (answer.equalsIgnoreCase("N")) {
+                isValidate = false;
+            } else {
+                ConsoleHelper.writeMessage("Введите только Y или N");
+            }
+        }
+        return false;
     }
 }
