@@ -51,7 +51,7 @@ public class Bruteforce {
         if (text.contains(". ")) {
             isValidate = true;
         }
-        int maxVisibleLength = 1000;
+        int maxVisibleLength = (int) (Math.sqrt(text.length() / 2)) * 2;
         while (isValidate) {
             ConsoleHelper.writeMessage(text.length() > maxVisibleLength ? text.substring(0, maxVisibleLength) : text);
             ConsoleHelper.writeMessage("текст можно прочесть? введите Y/N");
