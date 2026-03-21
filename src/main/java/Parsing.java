@@ -1,10 +1,10 @@
 import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Parsing {
     @SneakyThrows
@@ -18,7 +18,43 @@ public class Parsing {
         Map<Character, Integer> mapEncrypted = fillMapValues(pathEncrypted);
         Map<Character, Integer> mapStatistic = fillMapValues(pathStatistic);
 
+        List<Map.Entry<Character, Integer>> listEncrypted = mapToList(mapEncrypted);
+        List<Map.Entry<Character, Integer>> listStatistic = mapToList(mapStatistic);
 
+        Map<Character, Character> decrypted = new HashMap<>();
+        if (listEncrypted.size() <= listStatistic.size()){
+            for (int i = 0; i < listEncrypted.size(); i++) {
+                decrypted.put(listEncrypted.get(i).getKey(), listStatistic.get(i).getKey());
+            }
+        } else {
+            ConsoleHelper.writeMessage("Размер файла статистики нестаточный");
+            return;
+        }
+
+        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(pathEncrypted));
+             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
+            while (bufferedReader.ready()){
+                StringBuilder stringBuilder = new StringBuilder();
+                String string = bufferedReader.readLine();
+                for (char encryptedChar : string.toCharArray()) {
+                    Character decryptedChar = decrypted.get(encryptedChar);
+                    stringBuilder.append(decryptedChar);
+                }
+                bufferedWriter.write(stringBuilder.toString());
+                bufferedWriter.newLine();
+            }
+            ConsoleHelper.writeMessage("Содержимое расшифровано");
+        }
+
+
+
+    }
+
+    private static List<Map.Entry<Character, Integer>> mapToList(Map<Character, Integer> map){
+        List<Map.Entry<Character, Integer>> list = new ArrayList<>(map.entrySet());
+        Comparator<Map.Entry<Character, Integer>> comparator = Map.Entry.comparingByValue();
+        list.sort(comparator.reversed());
+        return list;
     }
 
     @SneakyThrows

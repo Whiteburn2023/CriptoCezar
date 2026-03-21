@@ -19,7 +19,7 @@ public class Menu {
                 case "1" -> Encrypted.encrypted(true);
                 case "2" -> Encrypted.encrypted(false);
                 case "3" -> Bruteforce.bruteforce();
-                case "4" -> System.out.println("4");
+                case "4" -> Parsing.parse();
                 case "5" -> {
                     return;
                 }
