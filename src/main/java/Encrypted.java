@@ -1,5 +1,3 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,16 +14,19 @@ public class Encrypted {
         ConsoleHelper.writeMessage("Файл сохранен в папку \n" + dst);
 
         CaesarCipher caesarCipher = new CaesarCipher();
-        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
-             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
-            while (bufferedReader.ready()) {
-                String string = bufferedReader.readLine();
-                bufferedWriter.write(flag ?
-                        caesarCipher.encrypt(string, key) :
-                        caesarCipher.decrypt(string, key));
-                bufferedWriter.newLine();
-            }
-        }
+//        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
+//             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
+//            while (bufferedReader.ready()) {
+//                String string = bufferedReader.readLine();
+//                bufferedWriter.write(flag ?
+//                        caesarCipher.encrypt(string, key) :
+//                        caesarCipher.decrypt(string, key));
+//                bufferedWriter.newLine();
+//            }
+//        }
+        String content = Files.readString(Path.of(src));
+        Files.writeString(dst, flag ? caesarCipher.encrypt(content, key) : caesarCipher.decrypt(content, key));
+
         ConsoleHelper.writeMessage(flag ? "файл зашифрован" : "файл расшифрован");
     }
 }

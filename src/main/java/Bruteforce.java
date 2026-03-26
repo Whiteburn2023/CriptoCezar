@@ -1,11 +1,7 @@
 import lombok.SneakyThrows;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Bruteforce {
     @SneakyThrows
@@ -14,28 +10,37 @@ public class Bruteforce {
         String src = ConsoleHelper.readString();
         Path dst = ConsoleHelper.buildFileName(src, "_bruteforce");
 
-        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
-             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            List<String> list = new ArrayList<>();
-            while (bufferedReader.ready()) {
-                String string = bufferedReader.readLine();
-                list.add(string);
-                stringBuilder.append(string);
-            }
+//        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
+//             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            List<String> list = new ArrayList<>();
+//            while (bufferedReader.ready()) {
+//                String string = bufferedReader.readLine();
+//                list.add(string);
+//                stringBuilder.append(string);
+//            }
 
-            CaesarCipher caesarCipher = new CaesarCipher();
-            for (int i = 0; i < caesarCipher.alphabetLength(); i++) {
-                String decrypt = caesarCipher.decrypt(stringBuilder.toString(), i);
-                if (isValidateText(decrypt)) {
-                    for (String string : list) {
-                        String str = caesarCipher.decrypt(string, i);
-                        bufferedWriter.write(str);
-                        bufferedWriter.newLine();
-                    }
-                    ConsoleHelper.writeMessage("Текст расшифрован, ключ шифрования равен: " + i);
-                    break;
-                }
+        CaesarCipher caesarCipher = new CaesarCipher();
+//            for (int i = 0; i < caesarCipher.alphabetLength(); i++) {
+//                String decrypt = caesarCipher.decrypt(stringBuilder.toString(), i);
+//                if (isValidateText(decrypt)) {
+//                    for (String string : list) {
+//                        String str = caesarCipher.decrypt(string, i);
+//                        bufferedWriter.write(str);
+//                        bufferedWriter.newLine();
+//                    }
+//                    ConsoleHelper.writeMessage("Текст расшифрован, ключ шифрования равен: " + i);
+//                    break;
+//                }
+//            }
+//    }
+        String content = Files.readString(Path.of(src));
+        for (int i = 0; i < caesarCipher.alphabetLength(); i++) {
+            String decrypt = caesarCipher.decrypt(content, i);
+            if (isValidateText(decrypt)) {
+                Files.writeString(dst, decrypt);
+                ConsoleHelper.writeMessage("Текст расшифрован, ключ шифрования равен: " + i);
+                break;
             }
         }
     }

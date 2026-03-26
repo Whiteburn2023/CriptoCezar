@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Parsing {
     @SneakyThrows
@@ -22,18 +23,18 @@ public class Parsing {
         List<Map.Entry<Character, Integer>> listStatistic = mapToList(mapStatistic);
 
         Map<Character, Character> decrypted = new HashMap<>();
-        if (listEncrypted.size() <= listStatistic.size()){
+        if (listEncrypted.size() <= listStatistic.size()) {
             for (int i = 0; i < listEncrypted.size(); i++) {
                 decrypted.put(listEncrypted.get(i).getKey(), listStatistic.get(i).getKey());
             }
         } else {
-            ConsoleHelper.writeMessage("Размер файла статистики нестаточный");
+            ConsoleHelper.writeMessage("Размер файла статистики недостаточный");
             return;
         }
 
         try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(pathEncrypted));
              BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
-            while (bufferedReader.ready()){
+            while (bufferedReader.ready()) {
                 StringBuilder stringBuilder = new StringBuilder();
                 String string = bufferedReader.readLine();
                 for (char encryptedChar : string.toCharArray()) {
@@ -45,40 +46,47 @@ public class Parsing {
             }
             ConsoleHelper.writeMessage("Содержимое расшифровано");
         }
-
-
-
-    }
-
-    private static List<Map.Entry<Character, Integer>> mapToList(Map<Character, Integer> map){
-        List<Map.Entry<Character, Integer>> list = new ArrayList<>(map.entrySet());
-        Comparator<Map.Entry<Character, Integer>> comparator = Map.Entry.comparingByValue();
-        list.sort(comparator.reversed());
-        return list;
     }
 
     @SneakyThrows
-    private static Map<Character,Integer> fillMapValues(String path){
-        Map<Character, Integer> map = new HashMap<>();
+    private List<Map.Entry<String, Long>> convertToList(String path) {
+        return Arrays.stream(Files.readString(Path.of(path)).split(""))
+                .collect(Collectors.groupingBy(str -> str, Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .toList();
 
-        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(path))) {
-            StringBuilder stringBuilder = new StringBuilder();
-            while (bufferedReader.ready()) {
-                String string = bufferedReader.readLine();
-                stringBuilder.append(string);
-            }
-            char[] charArray = stringBuilder.toString().toCharArray();
+    }
 
-            for (char aChar : charArray) {
+//    private static List<Map.Entry<Character, Integer>> mapToList(Map<Character, Integer> map) {
+//        List<Map.Entry<Character, Integer>> list = new ArrayList<>(map.entrySet());
+//        Comparator<Map.Entry<Character, Integer>> comparator = Map.Entry.comparingByValue();
+//        list.sort(comparator.reversed());
+//        return list;
+//    }
+//
+//    @SneakyThrows
+//    private static Map<Character, Integer> fillMapValues(String path) {
+//        Map<Character, Integer> map = new HashMap<>();
+//
+//        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(path))) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            while (bufferedReader.ready()) {
+//                String string = bufferedReader.readLine();
+//                stringBuilder.append(string);
+//            }
+//            char[] charArray = stringBuilder.toString().toCharArray();
+//
+//            for (char aChar : charArray) {
 //                if (!mapEncrypted.containsKey(aChar)) {
 //                    mapEncrypted.put(aChar, 1);
 //                } else {
 //                    Integer integer = mapEncrypted.get(aChar);
 //                    mapEncrypted.put(aChar, integer + 1);
 //                }
-                map.merge(aChar, 1, (oldV, newV) -> oldV + newV);
-            }
-        }
-        return map;
-    }
+//                map.merge(aChar, 1, (oldV, newV) -> oldV + newV);
+//            }
+//        }
+//        return map;
+//    }
 }
