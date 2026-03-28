@@ -1,30 +1,32 @@
-import java.io.*;
-import java.util.Scanner;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Encrypted {
 
-    public static void encrypted() throws IOException {
-        System.out.println("Введите путь к файлу для его зашифровки");
-        Scanner scanner = new Scanner(System.in);
-        String src = scanner.nextLine();
-        System.out.println("введите ключ шифрования");
-        int key = scanner.nextInt();
-        System.out.println("Введите путь к файлу куда записать результат");
-        String dst = scanner.nextLine();
+    public static void encrypted(boolean flag) throws IOException {
 
-        try (FileReader fileReader = new FileReader(src);
-             BufferedReader bufferedReader = new BufferedReader(fileReader);
-             FileWriter fileWriter = new FileWriter(dst);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-            while (bufferedReader.ready()) {
-                String line = bufferedReader.readLine();
-                CaesarCipher caesarCipher = new CaesarCipher();
-                String lineEncrypt = caesarCipher.encrypt(line, key);
-                bufferedWriter.write(lineEncrypt);
+        ConsoleHelper.writeMessage("Введите путь к файлу для его " + (flag ? "зашифровки" : "расшифровки"));
+        String src = ConsoleHelper.readString();
+        Path dst = ConsoleHelper.buildFileName(src, (flag ? "_e" : "_d"));
+        ConsoleHelper.writeMessage("введите ключ шифрования");
+        int key = ConsoleHelper.readInt();
+        ConsoleHelper.writeMessage("Файл сохранен в папку \n" + dst);
 
-            }
-        }
-        System.out.println("файл зашифрован");
+        CaesarCipher caesarCipher = new CaesarCipher();
+//        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(src));
+//             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
+//            while (bufferedReader.ready()) {
+//                String string = bufferedReader.readLine();
+//                bufferedWriter.write(flag ?
+//                        caesarCipher.encrypt(string, key) :
+//                        caesarCipher.decrypt(string, key));
+//                bufferedWriter.newLine();
+//            }
+//        }
+        String content = Files.readString(Path.of(src));
+        Files.writeString(dst, flag ? caesarCipher.encrypt(content, key) : caesarCipher.decrypt(content, key));
 
+        ConsoleHelper.writeMessage(flag ? "файл зашифрован" : "файл расшифрован");
     }
 }
