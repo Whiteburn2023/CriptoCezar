@@ -1,11 +1,12 @@
 import lombok.SneakyThrows;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Parsing {
     @SneakyThrows
@@ -16,40 +17,57 @@ public class Parsing {
         String pathStatistic = ConsoleHelper.readString();
         Path dst = ConsoleHelper.buildFileName(pathEncrypted, "_parsing");
 
-        Map<Character, Integer> mapEncrypted = fillMapValues(pathEncrypted);
-        Map<Character, Integer> mapStatistic = fillMapValues(pathStatistic);
-
-        List<Map.Entry<Character, Integer>> listEncrypted = mapToList(mapEncrypted);
-        List<Map.Entry<Character, Integer>> listStatistic = mapToList(mapStatistic);
-
-        Map<Character, Character> decrypted = new HashMap<>();
+        List<Map.Entry<String, Long>> listEncrypted = convertToList(pathEncrypted);
+        List<Map.Entry<String, Long>> listStatistic = convertToList(pathStatistic);
         if (listEncrypted.size() <= listStatistic.size()) {
-            for (int i = 0; i < listEncrypted.size(); i++) {
-                decrypted.put(listEncrypted.get(i).getKey(), listStatistic.get(i).getKey());
-            }
+            Map<String, String> mapDecrypted = IntStream.range(0, listEncrypted.size())
+                    .boxed()
+                    .collect(Collectors.toMap(i -> listEncrypted.get(i).getKey(), i -> listStatistic.get(i).getKey()));
+            Files.writeString(dst,
+                    Arrays.stream(Files.readString(Path.of(pathEncrypted)).split(""))
+                            .map(mapDecrypted::get)
+                            .collect(Collectors.joining())
+            );
+            ConsoleHelper.writeMessage("Содержимое расшифровано");
         } else {
             ConsoleHelper.writeMessage("Размер файла статистики недостаточный");
-            return;
         }
 
-        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(pathEncrypted));
-             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
-            while (bufferedReader.ready()) {
-                StringBuilder stringBuilder = new StringBuilder();
-                String string = bufferedReader.readLine();
-                for (char encryptedChar : string.toCharArray()) {
-                    Character decryptedChar = decrypted.get(encryptedChar);
-                    stringBuilder.append(decryptedChar);
-                }
-                bufferedWriter.write(stringBuilder.toString());
-                bufferedWriter.newLine();
-            }
-            ConsoleHelper.writeMessage("Содержимое расшифровано");
-        }
+
+//        Map<Character, Integer> mapEncrypted = fillMapValues(pathEncrypted);
+//        Map<Character, Integer> mapStatistic = fillMapValues(pathStatistic);
+//
+//        List<Map.Entry<Character, Integer>> listEncrypted = mapToList(mapEncrypted);
+//        List<Map.Entry<Character, Integer>> listStatistic = mapToList(mapStatistic);
+//
+//        Map<Character, Character> decrypted = new HashMap<>();
+//        if (listEncrypted.size() <= listStatistic.size()) {
+//            for (int i = 0; i < listEncrypted.size(); i++) {
+//                decrypted.put(listEncrypted.get(i).getKey(), listStatistic.get(i).getKey());
+//            }
+//        } else {
+//            ConsoleHelper.writeMessage("Размер файла статистики недостаточный");
+//            return;
+//        }
+//
+//        try (BufferedReader bufferedReader = Files.newBufferedReader(Path.of(pathEncrypted));
+//             BufferedWriter bufferedWriter = Files.newBufferedWriter(dst)) {
+//            while (bufferedReader.ready()) {
+//                StringBuilder stringBuilder = new StringBuilder();
+//                String string = bufferedReader.readLine();
+//                for (char encryptedChar : string.toCharArray()) {
+//                    Character decryptedChar = decrypted.get(encryptedChar);
+//                    stringBuilder.append(decryptedChar);
+//                }
+//                bufferedWriter.write(stringBuilder.toString());
+//                bufferedWriter.newLine();
+//            }
+//            ConsoleHelper.writeMessage("Содержимое расшифровано");
+//        }
     }
 
     @SneakyThrows
-    private List<Map.Entry<String, Long>> convertToList(String path) {
+    private static List<Map.Entry<String, Long>> convertToList(String path) {
         return Arrays.stream(Files.readString(Path.of(path)).split(""))
                 .collect(Collectors.groupingBy(str -> str, Collectors.counting()))
                 .entrySet().stream()
